@@ -1,4 +1,4 @@
-#[allow(non_snake_case, non_camel_case_types, non_upper_case_globals)]
+#[allow(non_snake_case, non_camel_case_types, non_upper_case_globals, dead_code, unused_variables)]
 pub struct statusReg{
     carry: bool,
     zero: bool,
@@ -21,7 +21,8 @@ pub struct State{
     yRegister: u8,
     //Stack pointer: stores our current position on the stack
     stackPointer: u8,
-    /*Status register: a series of 8 bits that track our processor's status. For simplicty, we abstract these to bools
+    /*
+    Status register: a series of 8 bits that track our processor's status. For simplicty, we abstract these to bools
     From lo to hi (bit 0 to bit 7) these are:
         - Carry flag
         - Zero flag
@@ -35,8 +36,10 @@ pub struct State{
     section at the bottom of this file
     */
     statusRegister: statusReg,
+    memory: [u8; 65536],
 }
 //------------------6502 Constructor-----------------
+//TODO: check that these are the correct initial states
 pub fn build6502()->State{
     let temp = statusReg{
         carry: false,
@@ -48,14 +51,17 @@ pub fn build6502()->State{
         overflow: false,
         negative: false,
     };
-
+    let zeroChar: u8 = 0x00;
+    let mem = [zeroChar;65536];
     let res = State{
         programCounter: 0x0000,
         accumulator: 0x00,
         xRegister: 0x00,
         yRegister: 0x00,
-        stackPointer: 0xff,
+        //stack grows from 0x0100 to (at most) 0x01FF
+        stackPointer: 0x0100,
         statusRegister: temp,
+        memory: mem,
     };
     return res
 }
