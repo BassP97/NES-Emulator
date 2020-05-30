@@ -112,7 +112,37 @@ pub fn simulateInstruction(currState: &State)->bool{
         0x4D => ops::eor(&currState, abso),
         0x4E => ops::lsr(&currState, abso),
         
+        //0x50 to 0x5F
+        0x50 => ops::bvc(&currState, rela),
+        0x51 => ops::eor(&currState, indY),
+        0x55 => ops::eor(&currState, zpgX),
+        0x56 => ops::lsr(&currState, zpgX),
+        0x58 => ops::cli(&currState, impi),
+        0x59 => ops::eor(&currState, absY),
+        0x5D => ops::eor(&currState, absX),
+        0x5E => ops::lsr(&currState, absX),
+
+        //0x60 to 0x6F
+        0x60 => ops::rts(&currState, impi),
+        0x61 => ops::adc(&currState, Xind),
+        0x65 => ops::adc(&currState, zpag),
+        0x66 => ops::ror(&currState, zpag),
+        0x68 => ops::pla(&currState, impi),
+        0x69 => ops::adc(&currState, imme),
+        0x6A => ops::ror(&currState, accu),
+        0x6C => ops::jmp(&currState, indr),
+        0x6D => ops::adc(&currState, abso),
+        0x6E => ops::ror(&currState, abso),
+
         _ => return false,
     }
 }
 
+/*
+A note:
+    Some (late, mostly unlicensed) NES games use unofficial 
+    op codes. I am lazy, and thus don't want to implement 
+    unofficial op codes with unspecified behavior. Therefore,
+    if you want to play any riveting games like the 1994 NES 
+    classic *Beauty and the Beast*, this emulator isn't for you!
+*/

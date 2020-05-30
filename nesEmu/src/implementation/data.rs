@@ -1,18 +1,18 @@
 #[allow(non_snake_case, non_camel_case_types, non_upper_case_globals, dead_code, unused_variables)]
 pub struct statusReg{
-    carry: bool,
-    zero: bool,
-    IRQ: bool,
-    decimal: bool,
-    BRK: bool,
-    alwaysSet: bool,
-    overflow: bool,
-    negative: bool,
+    carry: u8,
+    zero: u8,
+    IRQ: u8,
+    decimal: u8,
+    BRK: u8,
+    alwaysSet: u8,
+    overflow: u8,
+    negative: u8,
 }
 
 pub struct State{
     //Program counter: stores current instruction location
-    programCounter: u16,
+    PC: u16,
     //Accumulator: stores the result of arithmatic and logical ops
     accumulator: u8,
     /*Index registers: store a whole bunch of stuff, including 
@@ -42,23 +42,28 @@ pub struct State{
 //TODO: check that these are the correct initial states
 pub fn build6502()->State{
     let temp = statusReg{
-        carry: false,
-        zero: false,
-        IRQ: false,
-        decimal: false,
-        BRK: false,
-        alwaysSet: true,
-        overflow: false,
-        negative: false,
+        carry: 0,
+        zero: 0,
+        IRQ: 0,
+        //the decimal flag is always set to 0 in the NES
+        decimal: 0,
+        BRK: 0,
+        alwaysSet: 1,
+        //The overflow flag is set if the previous operation
+        //resulted in the MVB being set
+        overflow: 0,
+        negative: 0,
     };
     let zeroChar: u8 = 0x00;
     let mem = [zeroChar;65536];
     let res = State{
-        programCounter: 0x0000,
+        PC: 0x0000,
         accumulator: 0x00,
         xRegister: 0x00,
         yRegister: 0x00,
         //stack grows from 0x0100 to (at most) 0x01FF
+        //In other words, 0x0000 to 0x0FF is reserved memory space
+        
         stackPointer: 0x0100,
         statusRegister: temp,
         memory: mem,
