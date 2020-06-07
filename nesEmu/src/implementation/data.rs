@@ -20,7 +20,7 @@ pub struct State{
     pub xRegister: u8,
     pub yRegister: u8,
     //Stack pointer: stores our current position on the stack
-    pub stackPointer: u16,
+    pub stackPointer: u8,
     /*
     Status register: a series of 8 bits that track our processor's status. For simplicty, we abstract these to bools
     From lo to hi (bit 0 to bit 7) these are:
@@ -62,9 +62,7 @@ pub fn build6502()->State{
         xRegister: 0x00,
         yRegister: 0x00,
         //stack grows from 0x0100 to (at most) 0x01FF
-        //In other words, 0x0000 to 0x0FF is reserved memory space
-        
-        stackPointer: 0x0100,
+        stackPointer: 0x00,//IMPORTANT - the SP wraps around from 0x01FF to 0x0100
         statusRegister: temp,
         memory: mem,
     };
