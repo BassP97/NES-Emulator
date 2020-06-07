@@ -1,6 +1,8 @@
 #[allow(non_snake_case, non_camel_case_types, non_upper_case_globals, dead_code, unused_variables)]
 pub use crate::implementation::data::State;
-pub use crate::implementation::data::ops;
+pub use crate::implementation::ops;
+pub use crate::implementation::bus;
+
 
 /*
 Another simple file - this emulates the instruction at the 
@@ -54,7 +56,8 @@ pub fn checkInterrupt(currState: &State){
 }
 
 pub fn simulateInstruction(currState: &State)->bool{
-    let opCode = currState.memory[currState.programCounter];
+    let opCode: u8 = bus::read(currState, currState.PC);
+    /*
     match opCode{
         //0x00 to 0x0F in the documentation
         0x00 => ops::brk(&currState, impi),
@@ -136,6 +139,9 @@ pub fn simulateInstruction(currState: &State)->bool{
 
         _ => return false,
     }
+
+    */
+    return false;
 }
 
 /*

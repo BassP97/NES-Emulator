@@ -7,16 +7,19 @@ pub use crate::implementation::simulate;
 
 fn main() {
     let processorState = data::build6502();
+
     //Current processor status - true is a-ok, false means
     //something has gone wrong
-    let mut status = true;
+    let mut status: bool = true;
+
     //load all necessary data into memory
     //run until we stop runnin!
-    loop:
-        simulate::checkInterrupt(&processorState)
-
-        let status = sumulate::simulateInstruction(&processorState)
-        if not status{
-            break
+    loop{
+            
+            simulate::checkInterrupt(&processorState);
+            status = simulate::simulateInstruction(&processorState);
+            if !status{
+                break;
+            }
         }
 }

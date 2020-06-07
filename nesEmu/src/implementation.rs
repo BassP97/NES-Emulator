@@ -3,3 +3,4 @@
 pub mod data;
 pub mod ops;
 pub mod bus;
+pub mod simulate;

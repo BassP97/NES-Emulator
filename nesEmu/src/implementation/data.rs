@@ -1,26 +1,26 @@
 #[allow(non_snake_case, non_camel_case_types, non_upper_case_globals, dead_code, unused_variables)]
 pub struct statusReg{
-    carry: u8,
-    zero: u8,
-    IRQ: u8,
-    decimal: u8,
-    BRK: u8,
-    alwaysSet: u8,
-    overflow: u8,
-    negative: u8,
+    pub carry: u8,
+    pub zero: u8,
+    pub IRQ: u8,
+    pub decimal: u8,
+    pub BRK: u8,
+    pub alwaysSet: u8,
+    pub overflow: u8,
+    pub negative: u8,
 }
 
 pub struct State{
     //Program counter: stores current instruction location
-    PC: u16,
+    pub PC: u16,
     //Accumulator: stores the result of arithmatic and logical ops
-    accumulator: u8,
+    pub accumulator: u8,
     /*Index registers: store a whole bunch of stuff, including 
     memory locations and data for arithmatic and logical ops*/
-    xRegister: u8,
-    yRegister: u8,
+    pub xRegister: u8,
+    pub yRegister: u8,
     //Stack pointer: stores our current position on the stack
-    stackPointer: u8,
+    pub stackPointer: u16,
     /*
     Status register: a series of 8 bits that track our processor's status. For simplicty, we abstract these to bools
     From lo to hi (bit 0 to bit 7) these are:
@@ -35,8 +35,8 @@ pub struct State{
     Documentation for what these flags mean can be found in the "misc" 
     section at the bottom of this file
     */
-    statusRegister: statusReg,
-    memory: [u8; 65536],
+    pub statusRegister: statusReg,
+    pub memory: [u8; 65536],
 }
 //------------------6502 Constructor-----------------
 //TODO: check that these are the correct initial states
