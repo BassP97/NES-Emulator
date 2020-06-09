@@ -1,0 +1,2 @@
+# NES-Emulator
+This is an NES emulator written in Rust. It does not work, therefore cloning it is a bit of a fool's errant. However, if you insist, standard rust build steps apply - simply cd into the repo directory and type `cargo build`, followed by `cargo run`. Since the project is unfinished this will, of course, do nothing, but may still be scintillating for those who enjoy compiling code for its own sake. 
