@@ -63,7 +63,10 @@ frame of. The triggering of a NMI can be prevented if bit 7 of PPU Control
 Register 1 ($2000) is clear. When a NMI occurs the system jumps to the 
 address located at $FFFA and $FFFB. 
 
-- Reset interrupts are triggered when the system first starts and when the user presses the reset button. When a reset occurs the system jumps to the address located at $FFFC and $FFFD
+- Reset interrupts are triggered when the system first starts and when 
+the user presses the reset button. When a reset occurs the system jumps 
+to the address located at $FFFC and $FFFD. Since our implementation doesn't
+have a reset button, this is somewhat moot
 
 The addresses to jump to when an interrupt occurs are stored in a vector 
 table in the program code at $FFFA-$FFFF (ie they vary on a per-program 

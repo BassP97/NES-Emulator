@@ -90,69 +90,96 @@ const zpgY: u8 = 0x0C;
     * 
     */
 
-
-//---------------Flag update utility functions---------------
-//These all return a bool, True indicates the flag was flipped
-//False indicates the flag's value didn't change
-fn checkAndUpdateCarry(currState: &mut State, result: u16)->bool{
-    return true;
-}
-
-fn checkAndUpdateZero(currState: &mut State, result: u16)->bool{
-    return true;
-}
-
-fn checkAndUpdateBreak(currState: &mut State, result: u16)->bool{
-    return true;
-}
-
-fn checkAndUpdateNegative(currState: &mut State, result: u16)->bool{
-    return true;
-}
-
-fn checkAndUpdateOverflow(currState: &mut State, result: u16)->bool{
-    return true;
-}
-
 //---------------Op-Code Simulation Functions---------------
 
 //Add memory to accumulator w/ carry - in other words, 
 //A + M + C -> A, C - sets the N, Z, C, and V flags
-pub fn adc(currState: &mut State, mode: u8){
+pub fn adc(currState: &mut State, mode: u8)->u8{
 
-    let temp: u16 = currState.accumulator.into();
+    let mut temp: u16 = 0x0000;
     let priorValue: u8 = currState.accumulator;
-    
+    let mut cycles: u8 = 0;
+    let mut pcDiff: u16 = 0;
     if mode == imme{
-        std::print!("immediate");
+        std::print!("ADC immediate");
+        temp = (priorValue+bus::read(currState, currState.PC+1)+currState.statusRegister.carry).into();
+        cycles = 2;
+        pcDiff = 2;
     }else if mode == zpag{
-        std::print!("zero page!");
-    }else if mode ==zpgX{
-        std::print!("zero page X!");
+        std::print!("ADC zero page!");
+        let zeroPgAddress = bus::read(currState, currState.PC+1) as u16;
+        temp = (priorValue+bus::read(currState, zeroPgAddress)+currState.statusRegister.carry).into();
+        cycles = 3;
+        pcDiff = 2;
+    }else if mode == zpgX{
+        std::print!("ADC zero page X!");
+        let zeroPgAddress = (bus::read(currState, currState.PC+1)+currState.xRegister) as u16;
+        temp = (priorValue+bus::read(currState, zeroPgAddress)+currState.statusRegister.carry).into();
+        cycles = 4;
+        pcDiff = 2;
     }else if mode == abso{
-        std::print!("absolute");
+        std::print!("ADC absolute");
+        let upper8Bits: u16 = (priorValue+bus::read(currState, currState.PC+1)+currState.statusRegister.carry).into();
+        let lower8Bits: u16 = (priorValue+bus::read(currState, currState.PC+1)+currState.statusRegister.carry).into();
+        let addressToRead: u16 = (upper8Bits<<8 + lower8Bits) as u16;
+        temp = (priorValue+bus::read(currState,addressToRead)+currState.statusRegister.carry).into();
+        cycles = 4;
+        pcDiff = 3;
     }else if mode == absX{
-        std::print!("absolute X");
+        std::print!("ADC absolute X");
+        let upper8Bits: u16 = (priorValue+bus::read(currState, currState.PC+1)+currState.statusRegister.carry).into();
+        let lower8Bits: u16 = (priorValue+bus::read(currState, currState.PC+1)+currState.statusRegister.carry).into();
+        let addressToRead: u16 = (upper8Bits<<8 + lower8Bits) + currState.xRegister as u16;
+        temp = (priorValue+bus::read(currState,addressToRead)+currState.statusRegister.carry).into();
+        cycles = 4;
+        pcDiff = 3;
     }else if mode == absY{
-        std::print!("absolute Y");
+        std::print!("ADC absolute Y");
+        let upper8Bits: u16 = (priorValue+bus::read(currState, currState.PC+1)+currState.statusRegister.carry).into();
+        let lower8Bits: u16 = (priorValue+bus::read(currState, currState.PC+1)+currState.statusRegister.carry).into();
+        let addressToRead: u16 = (upper8Bits<<8 + lower8Bits) + currState.yRegister as u16;
+        temp = (priorValue+bus::read(currState,addressToRead)+currState.statusRegister.carry).into();
+        cycles = 4;
+        pcDiff = 3;
     }else if mode == Xind{
-        std::print!("indirect X");
+        std::print!("ADC indirect X");
+        cycles = 6;
+        pcDiff = 2;
     }else if mode == indY{
-        std::print!("indirect Y");
+        std::print!("ADC indirect Y");
+        cycles = 5;
+        pcDiff = 2;
     }else{
         std::panic!("Illegal addressing mode for instruction ADC");
     }
-    checkAndUpdateCarry(currState, temp);
-    checkAndUpdateOverflow(currState, temp);
-    checkAndUpdateNegative(currState, temp);
-    checkAndUpdateZero(currState, temp);
+    currState.statusRegister.carry = 0;
+    //if bit 7 is set, set the carry flag
+    if temp>0x7F{
+        currState.statusRegister.carry = 1;
+    }
+    //if result is 0, set zero flag
+    if temp == 0{
+        currState.statusRegister.zero = 1;
+    }
+    //if result falls outside of the -128 to 127 range, set overflow 
+    //since temp is 16 bit, we're checking if it's greater than 0xFF (or all 1s)
+    if temp>0xFF{
+        currState.statusRegister.overflow = 1;
+    }
+    //if the 7 bit is set, set negative
+    if (temp&0x80)>>7 == 1{
+        currState.statusRegister.negative = 1;
+    }
+    currState.accumulator = temp as u8;
+    currState.PC = currState.PC+pcDiff;
+    return cycles; 
 }
 
 //Logical, bit by bit and on the accumulator using the contents of a byte of memory
 pub fn and(currState: &mut State, mode: u8){
     //placeholder value
     let mem:u8 = 0x00;
-    let mut temp:u16 = 0x0000;
+    let temp:u16 = 0x0000;
     if mode == imme{
         std::print!("immediate")
     }else if mode == zpag{
@@ -172,7 +199,5 @@ pub fn and(currState: &mut State, mode: u8){
     }else{
         std::panic!("Illegal addressing mode for instruction ADC");
     }
-    checkAndUpdateZero(currState, temp);
-    checkAndUpdateNegative(currState, temp);
 }
 
